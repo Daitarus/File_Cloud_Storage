@@ -49,7 +49,6 @@ namespace RetronslatorServer
         //for one client
         private static bool Authorization(byte[] hash)
         {
-            //bind Repository
             IRepositoryClient ClientR = new RepositoryClient(connectionString);
             Client? client = ClientR.SelectForHash(hash);
             if(client!=null)
