@@ -12,7 +12,7 @@ namespace RetronslatorServer
     {
         static PccServer pccServer;
         static string connectionString = ConfigurationManager.AppSettings["connectionString"];
-        static Logger logger = LogManager.GetCurrentClassLogger();
+        static Log log = new Log();
 
         static void Main(string[] args)
         {
@@ -69,43 +69,13 @@ namespace RetronslatorServer
             {
                 system_message = pccServer.TransferFile(clientInfo.aes);
                 logString = $"{clientInfo.Ip}:{clientInfo.Port} - {system_message}";
-                if (system_message[0] == 'E')
-                {
-                    logger.Error(logString);
-                }
-                if (system_message[0] == 'W')
-                {
-                    logger.Warn(logString);
-                }
-                if (system_message[0] == 'F')
-                {
-                    logger.Fatal(logString);
-                }
-                if (system_message[0] == 'I')
-                {
-                    logger.Info(logString);
-                }
+                log.LogWriter(system_message[0], logString);
             } while ((system_message[0] == 'W') || (system_message[0] == 'I'));
         }
 
-        private static void PrintSystemMessage(string SystemMessage)
+        private static void PrintSystemMessage(string systemMessage)
         {
-            if (SystemMessage[0] == 'E')
-            {
-                logger.Error(SystemMessage);
-            }
-            if (SystemMessage[0] == 'W')
-            {
-                logger.Warn(SystemMessage);
-            }
-            if (SystemMessage[0] == 'F')
-            {
-                logger.Fatal(SystemMessage);
-            }
-            if (SystemMessage[0] == 'I')
-            {
-                logger.Info(SystemMessage);
-            }
+            log.LogWriter(systemMessage);
         }
 
         //servise methods
