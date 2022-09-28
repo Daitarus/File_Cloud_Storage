@@ -1,5 +1,4 @@
-﻿using NLog;
-using ProtocolCryptographyC;
+﻿using ProtocolCryptographyC;
 using RepositoryDB;
 using System.Configuration;
 using System.Net;
@@ -36,29 +35,26 @@ namespace RetronslatorServer
             if (!checkData)
             {
                 //enter starting data
-                serverEndPoint = WriteIpEndPoint();
+                serverEndPoint = WriteStartingData();
             }
 
             //start server
-            PrintMessage.PrintSM("Server Start...", ConsoleColor.Yellow, true);
+            PrintMessage.PrintSM("Server start...", ConsoleColor.Yellow, true);
             RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
             pccServer = new PccServer(serverEndPoint, rsa);
             pccServer.Start(Authorization, Algorithm, PrintSystemMessage);
         }
+
+
+
+
 
         //for one client
         private static bool Authorization(byte[] hash)
         {
             IRepositoryClient ClientR = new RepositoryClient(connectionString);
             Client? client = ClientR.SelectForHash(hash);
-            if(client!=null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return client != null;
         }
 
         private static void Algorithm(ClientInfo clientInfo)
@@ -67,7 +63,13 @@ namespace RetronslatorServer
 
             do
             {
-                system_message = pccServer.TransferFile(clientInfo.aes);
+                system_message = pccServer.GetFileInfo(clientInfo.aes);
+                if (system_message[0]=='F')
+                {
+                    logString = $"{clientInfo.Ip}:{clientInfo.Port} - {system_message}";
+                    log.LogWriter(system_message[0], logString);
+                }
+                system_message = pccServer.SendFile(new FileInfo(system_message), clientInfo.aes);
                 logString = $"{clientInfo.Ip}:{clientInfo.Port} - {system_message}";
                 log.LogWriter(system_message[0], logString);
             } while ((system_message[0] == 'W') || (system_message[0] == 'I'));
@@ -79,7 +81,7 @@ namespace RetronslatorServer
         }
 
         //servise methods
-        static IPEndPoint WriteIpEndPoint()
+        static IPEndPoint WriteStartingData()
         {
             IPAddress ip = IPAddress.Parse("127.0.0.1");
             int port = 5000;
