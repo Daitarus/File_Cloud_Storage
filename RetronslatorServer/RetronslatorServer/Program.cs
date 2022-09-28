@@ -61,18 +61,43 @@ namespace RetronslatorServer
         {
             string system_message, logString;
 
-            do
+            IRepositoryClient ClientR = new RepositoryClient(connectionString);
+            IRepositoryClientFile ClientFileR = new RepositoryClientFile(connectionString);
+            Client? client = ClientR.SelectForHash(clientInfo.Hash);
+            ClientFile? clientFile;
+            if (client != null)
             {
-                system_message = pccServer.GetFileInfo(clientInfo.aes);
-                if (system_message[0]=='F')
+                if (client.Id_Files != null)
                 {
-                    logString = $"{clientInfo.Ip}:{clientInfo.Port} - {system_message}";
-                    log.LogWriter(system_message[0], logString);
+                    do
+                    {
+                        //get file info
+                        system_message = pccServer.GetFileInfo(clientInfo.aes);
+                        if (system_message[0] == 'F')
+                        {
+                            logString = $"{clientInfo.Ip}:{clientInfo.Port} - {system_message}";
+                            log.LogWriter(system_message[0], logString);
+                            break;
+                        }
+                        //check file in db
+                        clientFile = ClientFileR.GetToFullName(system_message);
+                        if (clientFile != null)
+                        {
+                            for (int i = 0; i < client.Id_Files.Length; i++)
+                            {
+                                if (client.Id_Files[i] == clientFile.Id)
+                                {
+                                    //send file
+                                    system_message = pccServer.SendFile(system_message, clientInfo.aes);
+                                    logString = $"{clientInfo.Ip}:{clientInfo.Port} - {system_message}";
+                                    log.LogWriter(system_message[0], logString);
+                                    break;
+                                }
+                            }
+                        }
+                    } while ((system_message[0] == 'W') || (system_message[0] == 'I'));
                 }
-                system_message = pccServer.SendFile(new FileInfo(system_message), clientInfo.aes);
-                logString = $"{clientInfo.Ip}:{clientInfo.Port} - {system_message}";
-                log.LogWriter(system_message[0], logString);
-            } while ((system_message[0] == 'W') || (system_message[0] == 'I'));
+            }
         }
 
         private static void PrintSystemMessage(string systemMessage)

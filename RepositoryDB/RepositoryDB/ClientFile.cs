@@ -11,17 +11,11 @@ namespace RepositoryDB
         [Required]
         public string Name { get; set; }
 
-        [Column("Path")]
-        [MaxLength(50)]
-        [Required]
-        public string Path { get; set; }
 
 
-
-        public ClientFile(string name, string path)
+        public ClientFile(string name)
         {
             Name = name;
-            Path = path;
         }
     }
 }

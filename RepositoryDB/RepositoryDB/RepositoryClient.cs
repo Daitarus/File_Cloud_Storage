@@ -6,7 +6,7 @@
 
         public Client? SelectForHash(byte[] hash)
         {
-            IQueryable<Client> clients = context.Clients.Where(Clients => Clients.Hash.Equals(hash));
+            IQueryable<Client> clients = context.Clients.Where(client => client.Hash.Equals(hash));
             if (clients.Count() > 0)
             {
                 return clients.First<Client>();
