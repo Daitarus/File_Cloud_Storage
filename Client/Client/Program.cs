@@ -1,5 +1,6 @@
 ﻿using ProtocolCryptographyC;
 using System.Net;
+using System.Text;
 
 namespace Client
 {
@@ -16,47 +17,13 @@ namespace Client
 
             if (system_message[0] == 'I')
             {
-                PrintMessage.PrintSM(system_message, ConsoleColor.Cyan, true);
+                PrintMessage.PrintSM('\n' + system_message + '\n', ConsoleColor.Cyan, true);
 
-                //get filename
-                string? fileName;
-                do
-                {
-                    //enter fileName
-                    do
-                    {
-                        PrintMessage.PrintSM("Please, enter file name: ", ConsoleColor.White, false);
-                        fileName = Console.ReadLine();
-                        if ((fileName == null) || (fileName == ""))
-                        {
-                            PrintMessage.PrintSM("Error: empty file name !!!", ConsoleColor.Red, true);
-                        }
-                    } while ((fileName == null) || (fileName == ""));
-                    system_message = pccClient.SendFileInfo(fileName);
-                    if (system_message[0] == 'F')
-                    {
-                        PrintMessage.PrintSM(system_message, ConsoleColor.Red, true);
-                        break;
-                    }
-                    system_message = pccClient.GetFile();
-
-                    //print
-                    if (system_message[0] == 'I')
-                    {
-                        PrintMessage.PrintSM(system_message, ConsoleColor.White, true);
-                    }
-                    if (system_message[0] == 'W')
-                    {
-                        PrintMessage.PrintSM(system_message, ConsoleColor.Yellow, true);
-                    }
-                    if ((system_message[0] == 'E') || (system_message[0] == 'F'))
-                    {
-                        PrintMessage.PrintSM(system_message, ConsoleColor.Red, true);
-                    }
-                } while ((system_message[0] == 'I') || (system_message[0] == 'W'));
+                //Main client work
+                MainClientWork(pccClient);
 
                 //disconnect
-                PrintMessage.PrintSM(pccClient.Disconnect(), ConsoleColor.Yellow, true);
+                PrintMessage.PrintSM('\n' + pccClient.Disconnect(), ConsoleColor.Cyan, true);
             }
             else
             {
@@ -65,6 +32,61 @@ namespace Client
             Console.ReadLine();
         }
 
+        static void MainClientWork(PccClient pccClient)
+        {
+            string system_message;
+
+            //get list files
+            PrintFileList(Encoding.UTF8.GetString(pccClient.GetMessage()));
+
+            //get files
+            do
+            {
+                //enter fileName
+                string? fileName;
+                do
+                {
+                    PrintMessage.PrintSM("Please, enter file name: ", ConsoleColor.White, false);
+                    fileName = Console.ReadLine();
+                    if ((fileName == null) || (fileName == ""))
+                    {
+                        PrintMessage.PrintSM("Error: empty file name !!!", ConsoleColor.Red, true);
+                    }
+                } while ((fileName == null) || (fileName == ""));
+                system_message = pccClient.SendFileInfo(fileName);
+                if (system_message[0] == 'F')
+                {
+                    PrintMessage.PrintSM(system_message, ConsoleColor.Red, true);
+                }
+                system_message = pccClient.GetFile();
+
+                //print
+                PrintSystemMessage(system_message);
+
+            } while ((system_message[0] == 'W') || (system_message[0] == 'I'));
+        }
+
+        //print
+        static void PrintFileList(string fileList)
+        {
+            PrintMessage.PrintSM("Your files:", ConsoleColor.Magenta, true);
+            PrintMessage.PrintSM(fileList, ConsoleColor.Yellow, true);
+        }
+        static void PrintSystemMessage(string system_message)
+        {
+            if (system_message[0] == 'I')
+            {
+                PrintMessage.PrintSM(system_message, ConsoleColor.White, true);
+            }
+            if (system_message[0] == 'W')
+            {
+                PrintMessage.PrintSM(system_message, ConsoleColor.Yellow, true);
+            }
+            if ((system_message[0] == 'E') || (system_message[0] == 'F'))
+            {
+                PrintMessage.PrintSM(system_message, ConsoleColor.Red, true);
+            }
+        }
 
         //enter starting data
         private static IPEndPoint EnterEndPoint()

@@ -59,7 +59,7 @@ namespace RetronslatorServer
 
         private static void ServerMainAlgorithm(ClientInfo clientInfo)
         {
-            string system_message, logString;
+            string system_message, logString;            
 
             IRepositoryClient ClientR = new RepositoryClient(connectionString);
             IRepositoryClientFile ClientFileR = new RepositoryClientFile(connectionString);
@@ -71,6 +71,18 @@ namespace RetronslatorServer
                 {
                     do
                     {
+                        system_message = "";
+                        //send list files
+                        for (int i = 1; i <= client.Id_Files.Length; i++) 
+                        {
+                            clientFile = ClientFileR.SelcetId(i);
+                            if(clientFile!=null)
+                            {
+                                system_message += (clientFile.Name + "\n\r");
+                            }
+                        }
+                        pccServer.SendMessage(Encoding.UTF8.GetBytes(system_message),clientInfo.aes);
+
                         //get file info
                         system_message = pccServer.GetFileInfo(clientInfo.aes);
                         if (system_message[0] == 'F')
@@ -79,6 +91,7 @@ namespace RetronslatorServer
                             log.LogWriter(system_message[0], logString);
                             break;
                         }
+
                         //check file in db
                         clientFile = ClientFileR.GetToFullName(system_message);
                         if (clientFile != null)
