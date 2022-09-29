@@ -18,9 +18,9 @@ namespace RepositoryDB
         {
             context.Add(entity);
         }
-        public void Remove(int id)
+        public void Remove(T entity)
         {
-            context.Remove(id);
+            context.Remove(entity);
         }
         public IQueryable<T> SelectAll()
         {

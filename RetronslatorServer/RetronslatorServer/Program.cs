@@ -42,7 +42,7 @@ namespace RetronslatorServer
             PrintMessage.PrintSM("Server start...", ConsoleColor.Yellow, true);
             RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
             pccServer = new PccServer(serverEndPoint, rsa);
-            pccServer.Start(Authorization, Algorithm, PrintSystemMessage);
+            pccServer.Start(Authorization, ServerMainAlgorithm, PrintSystemMessage);
         }
 
 
@@ -57,7 +57,7 @@ namespace RetronslatorServer
             return client != null;
         }
 
-        private static void Algorithm(ClientInfo clientInfo)
+        private static void ServerMainAlgorithm(ClientInfo clientInfo)
         {
             string system_message, logString;
 

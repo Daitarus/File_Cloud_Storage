@@ -1,4 +1,4 @@
-﻿namespace RetronslatorServer
+﻿namespace Client
 {
     internal class PrintMessage
     {

@@ -6,7 +6,7 @@ namespace RepositoryDB
     {
         T? SelcetId(int id);
         void Insert(T entity);
-        void Remove(int id);
+        void Remove(T entity);
         IQueryable<T> SelectAll();
         void SaveChange();
     }
