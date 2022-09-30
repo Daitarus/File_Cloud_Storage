@@ -6,7 +6,7 @@ namespace RepositoryDB
     {
         private readonly string ConnectionString;
         public DbSet<Client> Clients { get; set; }
-        public DbSet<ClientFile> ClientFiles { get; set; }
+        public DbSet<FileC> Files { get; set; }
         public DbSet<History> Histories { get; set; }
         
         public ApplicationContext(string connectionString)

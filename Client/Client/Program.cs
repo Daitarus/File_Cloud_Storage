@@ -9,6 +9,7 @@ namespace Client
         static void Main(string[] args)
         {
             IPEndPoint serverEndPoint = EnterEndPoint();
+            Console.WriteLine();
             string authorizationString = EnterAuthorization();
 
             //start client
@@ -34,36 +35,87 @@ namespace Client
 
         static void MainClientWork(PccClient pccClient)
         {
+            bool mainCycle = true;
             string system_message;
 
-            //get list files
-            PrintFileList(Encoding.UTF8.GetString(pccClient.GetMessage()));
+            while (mainCycle)
+            {
 
-            //get files
+                //enter num action (Type Message)
+                int com = EnterNumAction();
+
+                switch (com)
+                {
+                    //get file list
+                    case 1:
+                        {
+                            system_message = pccClient.SendMessage(new byte[] { (byte)TypeMessage.GET_FILES_LIST });
+                            PrintFileList(Encoding.UTF8.GetString(pccClient.GetMessage()));
+                            if (system_message[0]=='F')
+                            {
+                                mainCycle = false;
+                            }
+                            break;
+                        }
+                    //get file
+                    case 2:
+                        {
+                            pccClient.SendMessage(new byte[] { (byte)TypeMessage.GET_FILE });
+                            mainCycle = GetFile(pccClient);
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }           
+        }
+
+        static bool GetFile(PccClient pccClient)
+        {
+            string system_message;
+
+            //enter path
+            string? path;
             do
             {
-                //enter fileName
-                string? fileName;
-                do
+                PrintMessage.PrintSM("Please, enter directory for save file: ", ConsoleColor.White, false);
+                path = Console.ReadLine();
+                if ((path == null) || (path == ""))
                 {
-                    PrintMessage.PrintSM("Please, enter file name: ", ConsoleColor.White, false);
-                    fileName = Console.ReadLine();
-                    if ((fileName == null) || (fileName == ""))
-                    {
-                        PrintMessage.PrintSM("Error: empty file name !!!", ConsoleColor.Red, true);
-                    }
-                } while ((fileName == null) || (fileName == ""));
-                system_message = pccClient.SendFileInfo(fileName);
-                if (system_message[0] == 'F')
-                {
-                    PrintMessage.PrintSM(system_message, ConsoleColor.Red, true);
+                    PrintMessage.PrintSM("Error: empty directory !!!", ConsoleColor.Red, true);
                 }
-                system_message = pccClient.GetFile();
+            } while ((path == null) || (path == ""));
+            if (path[path.Length-1]!='\\')
+            {
+                path += '\\';
+            }
+            //enter fileName
+            string? fileName;
+            do
+            {
+                PrintMessage.PrintSM("Please, enter file name: ", ConsoleColor.White, false);
+                fileName = Console.ReadLine();
+                if ((fileName == null) || (fileName == ""))
+                {
+                    PrintMessage.PrintSM("Error: empty file name !!!", ConsoleColor.Red, true);
+                }
+            } while ((fileName == null) || (fileName == ""));
+            system_message = pccClient.SendFileInfo(fileName);
+            if (system_message[0] == 'F')
+            {
+                PrintMessage.PrintSM(system_message, ConsoleColor.Red, true);
+            }
 
-                //print
-                PrintSystemMessage(system_message);
+            system_message = pccClient.GetFile(path);
+            if((system_message[0] != 'I') && (system_message[0] != 'W'))
+            {
+                return false;
+            }
 
-            } while ((system_message[0] == 'W') || (system_message[0] == 'I'));
+            //print
+            PrintSystemMessage(system_message);
+
+            return true;
         }
 
         //print
@@ -163,6 +215,34 @@ namespace Client
             }
 
             return login + password;
+        }
+
+        static int EnterNumAction()
+        {
+            bool errorEnter = false;
+            int com = 0;
+
+            while (!errorEnter)
+            {
+                PrintMessage.PrintSM("Choose comand:", ConsoleColor.Magenta, true);
+                PrintMessage.PrintSM("1. Get files list", ConsoleColor.Yellow, true);
+                PrintMessage.PrintSM("2. Get file", ConsoleColor.Yellow, true);
+                errorEnter = int.TryParse(Console.ReadLine(), out com);
+                if (errorEnter)
+                {
+                    if (!((com >= 1) && (com <= 2)))
+                    {
+                        errorEnter = false;
+                        Console.WriteLine("Error: Invalid command!");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Error: Invalid command!");
+                }
+            }
+
+            return com;
         }
     }
 }

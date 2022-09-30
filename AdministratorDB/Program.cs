@@ -12,22 +12,35 @@ namespace AdministratorDB
         {
             while (true)
             {
-                int com = Menu();
+                int com = MainMenu();
                 switch (com)
                 {
                     case 1:
-                        AddClient();
+                        AlgClient();
                         break;
                     case 2:
-                        DeleteClient();
+                        AlgFile();
                         break;
                     default:
                         break;
                 }
+                Console.WriteLine();
             }
         }
 
-        static int Menu()
+        static int MainMenu()
+        {
+            return Menu(new string[] { "Work with clients", "Work with files" });
+        }
+        static int MenuClient()
+        {
+            return Menu(new string[] { "Add client", "Delete client" });
+        }
+        static int MenuFile()
+        {
+            return Menu(new string[] { "Add file", "Delete file" });
+        }
+        static int Menu(string[] strCom)
         {
             bool errorEnter = false;
             int com = 0;
@@ -35,12 +48,14 @@ namespace AdministratorDB
             while (!errorEnter)
             {
                 Console.WriteLine("Choose comand:");
-                Console.WriteLine("1. Add client");
-                Console.WriteLine("2. Delete client");
+                for(int i=1;i<=strCom.Length;i++)
+                {
+                    Console.WriteLine($"{i}. {strCom[i - 1]}");
+                }
                 errorEnter = int.TryParse(Console.ReadLine(), out com);
                 if (errorEnter)
                 {
-                    if (!((com >= 1) && (com <= 2)))
+                    if (!((com >= 1) && (com <= strCom.Length)))
                     {
                         errorEnter = false;
                         Console.WriteLine("Error: Invalid command!");
@@ -55,15 +70,48 @@ namespace AdministratorDB
             return com;
         }
 
+        static void AlgClient()
+        {
+            int com = MenuClient();
+            switch (com)
+            {
+                case 1:
+                    AddClient();
+                    break;
+                case 2:
+                    DeleteClient();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        static void AlgFile()
+        {
+            int com = MenuFile();
+            switch (com)
+            {
+                case 1:
+                    AddFile();
+                    break;
+                case 2:
+                    DeleteFile();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
         static void AddClient()
         {
             bool errorEnter = false;
             string login = "", password = "";
 
-            //enter login
+            //enter name
             while (!errorEnter)
             {
-                Console.Write("Enter your login: ");
+                Console.Write("Enter login: ");
                 login = Console.ReadLine();
                 if (login != null)
                 {
@@ -79,7 +127,7 @@ namespace AdministratorDB
             }
             errorEnter = false;
 
-            //enter password
+            //enter path
             while (!errorEnter)
             {
                 Console.Write("Enter password: ");
@@ -106,7 +154,7 @@ namespace AdministratorDB
 
             while (!errorEnter)
             {
-                Console.Write("Enter array file's id: ");
+                Console.Write("Enter array client id: ");
                 stringId = Console.ReadLine();
                 if (stringId != null)
                 {
@@ -130,7 +178,7 @@ namespace AdministratorDB
                 }
                 if (!errorEnter)
                 {
-                    Console.WriteLine("Invalid file's id !");
+                    Console.WriteLine("Invalid client id !");
                 }
             }
 
@@ -158,7 +206,7 @@ namespace AdministratorDB
 
             while (!errorEnter)
             {
-                Console.Write("Enter client's id: ");
+                Console.Write("Enter file's id: ");
                 stringId = Console.ReadLine();
                 errorEnter = int.TryParse(stringId, out id);
                 if (!errorEnter)
@@ -167,7 +215,7 @@ namespace AdministratorDB
                 }
             }
 
-            //delete client
+            //delete file
             RepositoryClient clientR = new RepositoryClient(connectionString);
             Client? client = clientR.SelcetId(id);
             if (client != null)
@@ -179,6 +227,110 @@ namespace AdministratorDB
             else
             {
                 Console.WriteLine("Client not found !");
+            }
+        }
+
+        static void AddFile()
+        {
+            bool errorEnter = false;
+            string name = "", path = "", fullpath = "";
+
+            //enter name
+            while (!errorEnter)
+            {
+                Console.Write("Enter name: ");
+                name = Console.ReadLine();
+                if (name != null)
+                {
+                    if (name != "")
+                    {
+                        errorEnter = true;
+                    }
+                }
+                if (!errorEnter)
+                {
+                    Console.WriteLine("Name is empty !");
+                }
+            }
+            errorEnter = false;
+
+            //enter path
+            while (!errorEnter)
+            {
+                Console.Write("Enter path: ");
+                path = Console.ReadLine();
+                if (path != null)
+                {
+                    if (path != "")
+                    {
+                        errorEnter = true;
+                    }
+                }
+                if (!errorEnter)
+                {
+                    Console.WriteLine("Path is empty !");
+                }
+            }
+            errorEnter = false;
+
+            //enter fullpath
+            while (!errorEnter)
+            {
+                Console.Write("Enter full path: ");
+                fullpath = Console.ReadLine();
+                if (fullpath != null)
+                {
+                    if (fullpath != "")
+                    {
+                        errorEnter = true;
+                    }
+                }
+                if (!errorEnter)
+                {
+                    Console.WriteLine("Full path is empty !");
+                }
+            }
+            errorEnter = false;
+
+            //add file
+            RepositoryFileC fileR = new RepositoryFileC(connectionString);
+            FileC file = new FileC(name, path, fullpath);
+            fileR.Insert(file);
+            fileR.SaveChange();
+
+            Console.WriteLine("File was add !");
+        }
+
+        static void DeleteFile()
+        {
+            //enter id
+            bool errorEnter = false;
+            int id = 0;
+            string stringId;
+
+            while (!errorEnter)
+            {
+                Console.Write("Enter file id: ");
+                stringId = Console.ReadLine();
+                errorEnter = int.TryParse(stringId, out id);
+                if (!errorEnter)
+                {
+                    Console.WriteLine("Invalid id !");
+                }
+            }
+
+            //delete file
+            RepositoryFileC fileR = new RepositoryFileC(connectionString);
+            FileC? file = fileR.SelcetId(id);
+            if (file != null)
+            {
+                fileR.Remove(file);
+                fileR.SaveChange();
+                Console.WriteLine("File was delete !");
+            }
+            else
+            {
+                Console.WriteLine("File not found !");
             }
         }
     }

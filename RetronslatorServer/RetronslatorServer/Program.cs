@@ -61,54 +61,79 @@ namespace RetronslatorServer
         {
             string system_message, logString;            
 
-            IRepositoryClient ClientR = new RepositoryClient(connectionString);
-            IRepositoryClientFile ClientFileR = new RepositoryClientFile(connectionString);
-            Client? client = ClientR.SelectForHash(clientInfo.Hash);
-            ClientFile? clientFile;
+            IRepositoryClient clientR = new RepositoryClient(connectionString);
+            IRepositoryFileC fileCR = new RepositoryFileC(connectionString);
+            Client? client = clientR.SelectForHash(clientInfo.Hash);
+            FileC? fileC;
             if (client != null)
             {
                 if (client.Id_Files != null)
                 {
-                    do
+                    bool mainCycle = true;
+                    while (mainCycle)
                     {
                         system_message = "";
-                        //send list files
-                        for (int i = 1; i <= client.Id_Files.Length; i++) 
+                        //get num comand (Type Message)
+                        TypeMessage com = (TypeMessage)pccServer.GetMessage(clientInfo.aes)[0];
+                        switch (com)
                         {
-                            clientFile = ClientFileR.SelcetId(i);
-                            if(clientFile!=null)
-                            {
-                                system_message += (clientFile.Name + "\n\r");
-                            }
-                        }
-                        pccServer.SendMessage(Encoding.UTF8.GetBytes(system_message),clientInfo.aes);
-
-                        //get file info
-                        system_message = pccServer.GetFileInfo(clientInfo.aes);
-                        if (system_message[0] == 'F')
-                        {
-                            logString = $"{clientInfo.Ip}:{clientInfo.Port} - {system_message}";
-                            log.LogWriter(system_message[0], logString);
-                            break;
-                        }
-
-                        //check file in db
-                        clientFile = ClientFileR.GetToFullName(system_message);
-                        if (clientFile != null)
-                        {
-                            for (int i = 0; i < client.Id_Files.Length; i++)
-                            {
-                                if (client.Id_Files[i] == clientFile.Id)
+                            case TypeMessage.GET_FILES_LIST:
                                 {
-                                    //send file
-                                    system_message = pccServer.SendFile(system_message, clientInfo.aes);
-                                    logString = $"{clientInfo.Ip}:{clientInfo.Port} - {system_message}";
-                                    log.LogWriter(system_message[0], logString);
+                                    //send list files
+                                    for (int i = 0; i < client.Id_Files.Length; i++)
+                                    {
+                                        fileC = fileCR.SelcetId(client.Id_Files[i]);
+                                        if (fileC != null)
+                                        {
+                                            system_message += (fileC.Path + "\n\r");
+                                        }
+                                    }
+                                    pccServer.SendMessage(Encoding.UTF8.GetBytes(system_message), clientInfo.aes);
                                     break;
                                 }
-                            }
+                            case TypeMessage.GET_FILE:
+                                {
+                                    //get file info
+                                    system_message = pccServer.GetFileInfo(clientInfo.aes);
+                                    if (system_message[0] == 'F')
+                                    {
+                                        logString = $"{clientInfo.Ip}:{clientInfo.Port} - {system_message}";
+                                        log.LogWriter(system_message[0], logString);
+                                        break;
+                                    }
+
+                                    //check file in db
+                                    fileC = fileCR.GetToPath(system_message);
+                                    if (fileC != null)
+                                    {
+                                        for (int i = 0; i < client.Id_Files.Length; i++)
+                                        {
+                                            if (client.Id_Files[i] == fileC.Id)
+                                            {
+                                                //send file
+                                                system_message = pccServer.SendFile(fileC.FullPath, clientInfo.aes);
+                                                logString = $"{clientInfo.Ip}:{clientInfo.Port} - {system_message}";
+                                                log.LogWriter(system_message[0], logString);
+                                                if ((system_message[0] != 'I') && (system_message[0]!='W'))
+                                                {
+                                                    mainCycle = false;
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //imitation "not found"
+                                        system_message = pccServer.SendFile(null, clientInfo.aes);
+                                    }
+                                    break;
+                                }
+                            default:
+                                mainCycle = false;
+                                break;
                         }
-                    } while ((system_message[0] == 'W') || (system_message[0] == 'I'));
+                    }
                 }
             }
         }
@@ -150,14 +175,6 @@ namespace RetronslatorServer
             errorEnter = false;
 
             return new IPEndPoint(ip, port);
-        }
-
-        private static byte[] GetHash(string authoriazationString)
-        {
-            using (SHA1Managed sha1 = new SHA1Managed())
-            {
-                return sha1.ComputeHash(Encoding.UTF8.GetBytes(authoriazationString));
-            }
         }
     }
 }
