@@ -25,9 +25,10 @@ namespace RepositoryDB
 
 
 
-        public History(DateTime time, string action, int id_Client)
+        public History(string address, DateTime time, string action, int id_Client)
         {
-            Time = time;
+            Address = address;
+            Time = time.ToUniversalTime();
             Action = action;
             Id_Client = id_Client;
         }

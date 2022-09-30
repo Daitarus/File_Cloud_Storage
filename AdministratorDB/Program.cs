@@ -10,21 +10,31 @@ namespace AdministratorDB
         static string connectionString = ConfigurationManager.AppSettings["connectionString"];
         static void Main(string[] args)
         {
-            while (true)
+            //check DB
+            try
             {
-                int com = MainMenu();
-                switch (com)
+                using (ApplicationContext context = new ApplicationContext(connectionString)) { }
+                while (true)
                 {
-                    case 1:
-                        AlgClient();
-                        break;
-                    case 2:
-                        AlgFile();
-                        break;
-                    default:
-                        break;
+                    int com = MainMenu();
+                    switch (com)
+                    {
+                        case 1:
+                            AlgClient();
+                            break;
+                        case 2:
+                            AlgFile();
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 Console.WriteLine();
+            }
+            catch
+            {
+                Console.WriteLine("Error connect to DB !");
+                Console.ReadKey();
             }
         }
 

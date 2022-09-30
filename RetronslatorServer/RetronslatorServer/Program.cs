@@ -38,11 +38,22 @@ namespace RetronslatorServer
                 serverEndPoint = WriteStartingData();
             }
 
-            //start server
-            PrintMessage.PrintSM("Server start...", ConsoleColor.Yellow, true);
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            pccServer = new PccServer(serverEndPoint, rsa);
-            pccServer.Start(Authorization, ServerMainAlgorithm, PrintSystemMessage);
+            //check DB
+            try
+            {
+                using (ApplicationContext context = new ApplicationContext(connectionString)) { }
+
+                //start server
+                PrintMessage.PrintSM("Server start...", ConsoleColor.Yellow, true);
+                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                pccServer = new PccServer(serverEndPoint, rsa);
+                pccServer.Start(Authorization, ServerMainAlgorithm, PrintSystemMessage);
+            }
+            catch
+            {
+                PrintMessage.PrintSM("Error connect to DB !", ConsoleColor.Red, true);
+                Console.ReadKey();
+            }
         }
 
 
@@ -59,12 +70,17 @@ namespace RetronslatorServer
 
         private static void ServerMainAlgorithm(ClientInfo clientInfo)
         {
-            string system_message, logString;            
+            string system_message, logString; 
+            
+            string address = clientInfo.Ip + ":" + clientInfo.Port;
 
             IRepositoryClient clientR = new RepositoryClient(connectionString);
             IRepositoryFileC fileCR = new RepositoryFileC(connectionString);
+            IRepositoryHistory historyR = new RepositoryHistory(connectionString);
             Client? client = clientR.SelectForHash(clientInfo.Hash);
+            History? history;
             FileC? fileC;
+
             if (client != null)
             {
                 if (client.Id_Files != null)
@@ -79,6 +95,11 @@ namespace RetronslatorServer
                         {
                             case TypeMessage.GET_FILES_LIST:
                                 {
+                                    //log action in DB (type)
+                                    history = new History(address, DateTime.Now, "request list files", client.Id);
+                                    historyR.Insert(history);
+                                    historyR.SaveChange();
+
                                     //send list files
                                     for (int i = 0; i < client.Id_Files.Length; i++)
                                     {
@@ -88,11 +109,26 @@ namespace RetronslatorServer
                                             system_message += (fileC.Path + "\n\r");
                                         }
                                     }
-                                    pccServer.SendMessage(Encoding.UTF8.GetBytes(system_message), clientInfo.aes);
+                                    system_message = pccServer.SendMessage(Encoding.UTF8.GetBytes(system_message), clientInfo.aes);
+                                    if (system_message[0] == 'F')
+                                    {
+                                        logString = $"{clientInfo.Ip}:{clientInfo.Port} - {system_message}";
+                                        mainCycle = false;
+                                    }
+                                    else
+                                    {
+                                        logString = $"{clientInfo.Ip}:{clientInfo.Port} - list files was send";
+                                    }
+                                    log.LogWriter(system_message[0], logString);
                                     break;
                                 }
                             case TypeMessage.GET_FILE:
                                 {
+                                    //log action in DB (type)
+                                    history = new History(address, DateTime.Now, "request file", client.Id);
+                                    historyR.Insert(history);
+                                    historyR.SaveChange();
+
                                     //get file info
                                     system_message = pccServer.GetFileInfo(clientInfo.aes);
                                     if (system_message[0] == 'F')
@@ -101,6 +137,11 @@ namespace RetronslatorServer
                                         log.LogWriter(system_message[0], logString);
                                         break;
                                     }
+
+                                    //log action in DB (file info)
+                                    history = new History(address, DateTime.Now, "send file info: " + system_message, client.Id);
+                                    historyR.Insert(history);
+                                    historyR.SaveChange();
 
                                     //check file in db
                                     fileC = fileCR.GetToPath(system_message);
@@ -120,12 +161,17 @@ namespace RetronslatorServer
                                                 }
                                                 break;
                                             }
+                                            if(!mainCycle)
+                                            {
+                                                //imitation "not found"
+                                                pccServer.SendFile(null, clientInfo.aes);
+                                            }
                                         }
                                     }
                                     else
                                     {
                                         //imitation "not found"
-                                        system_message = pccServer.SendFile(null, clientInfo.aes);
+                                        pccServer.SendFile(null, clientInfo.aes);
                                     }
                                     break;
                                 }
@@ -133,6 +179,7 @@ namespace RetronslatorServer
                                 mainCycle = false;
                                 break;
                         }
+
                     }
                 }
             }
