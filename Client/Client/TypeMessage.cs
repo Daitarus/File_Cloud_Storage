@@ -11,6 +11,7 @@ namespace Client
         UNKNOW = 0,
         GET_FILES_LIST = 1,
         GET_FILE = 2,
-        SEND_FILE = 3
+        ADD_FILE = 3,
+        DELETE_FILE = 4
     }
 }

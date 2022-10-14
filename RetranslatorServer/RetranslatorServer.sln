@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32505.173
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetranslatorServer", "RetranslatorServer\RetranslatorServer.csproj", "{FDDAAB22-92CA-4FA7-BF44-9702B39B7E2D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryDB", "..\RepositoryDB\RepositoryDB\RepositoryDB.csproj", "{8F66A4B9-6EB5-4427-9482-154DDF129B35}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProtocolCryptographyC", "..\..\ProtocolCryptographyC\ProtocolCryptographyC\ProtocolCryptographyC.csproj", "{8BFF96FB-55B3-4EEE-8E3D-30D1B80796CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "..\Client\Client\Client.csproj", "{A8110EA8-6489-4DBC-B381-E37180D18506}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdministratorDB", "..\AdministratorDB\AdministratorDB.csproj", "{D12ACA65-C19F-4526-967C-859D4840C863}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptL", "..\..\..\Cryptography\CryptL\CryptL\CryptL.csproj", "{6CC66848-DAC8-41E0-88B7-862189382B21}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FDDAAB22-92CA-4FA7-BF44-9702B39B7E2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDDAAB22-92CA-4FA7-BF44-9702B39B7E2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDDAAB22-92CA-4FA7-BF44-9702B39B7E2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDDAAB22-92CA-4FA7-BF44-9702B39B7E2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F66A4B9-6EB5-4427-9482-154DDF129B35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F66A4B9-6EB5-4427-9482-154DDF129B35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F66A4B9-6EB5-4427-9482-154DDF129B35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F66A4B9-6EB5-4427-9482-154DDF129B35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BFF96FB-55B3-4EEE-8E3D-30D1B80796CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BFF96FB-55B3-4EEE-8E3D-30D1B80796CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BFF96FB-55B3-4EEE-8E3D-30D1B80796CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BFF96FB-55B3-4EEE-8E3D-30D1B80796CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8110EA8-6489-4DBC-B381-E37180D18506}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8110EA8-6489-4DBC-B381-E37180D18506}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8110EA8-6489-4DBC-B381-E37180D18506}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8110EA8-6489-4DBC-B381-E37180D18506}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D12ACA65-C19F-4526-967C-859D4840C863}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D12ACA65-C19F-4526-967C-859D4840C863}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D12ACA65-C19F-4526-967C-859D4840C863}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D12ACA65-C19F-4526-967C-859D4840C863}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CC66848-DAC8-41E0-88B7-862189382B21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CC66848-DAC8-41E0-88B7-862189382B21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CC66848-DAC8-41E0-88B7-862189382B21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CC66848-DAC8-41E0-88B7-862189382B21}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B6B2C58C-52F6-493A-A8F8-54BC10521E37}
+	EndGlobalSection
+EndGlobal

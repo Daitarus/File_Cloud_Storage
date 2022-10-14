@@ -7,10 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-	<ItemGroup>
-		<Reference Include="ProtocolCryptographyC">
-			<HintPath>..\..\..\ProtocolCryptographyC\ProtocolCryptographyC\bin\Release\net6.0\ProtocolCryptographyC.dll</HintPath>
-		</Reference>
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\ProtocolCryptographyC\ProtocolCryptographyC\ProtocolCryptographyC.csproj" />
+  </ItemGroup>
 	
 </Project>
