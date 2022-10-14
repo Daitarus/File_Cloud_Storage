@@ -65,7 +65,10 @@ namespace RetranslatorServer
                         historyR.Insert(history);
                         historyR.SaveChange();
                     }
-
+                    else
+                    {
+                        mainCycle = false;
+                    }
                 }
             }
         }
