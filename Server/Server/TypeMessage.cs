@@ -1,4 +1,4 @@
-﻿namespace Client
+﻿namespace Server
 {
     public enum TypeMessage : byte
     {

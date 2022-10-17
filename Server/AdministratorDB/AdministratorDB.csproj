@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ProtocolCryptographyC\ProtocolCryptographyC.csproj" />
+    <ProjectReference Include="..\..\CryptL\CryptL.csproj" />
+    <ProjectReference Include="..\RepositoryDB\RepositoryDB.csproj" />
   </ItemGroup>
-	
+
+
 </Project>

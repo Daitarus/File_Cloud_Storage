@@ -8,7 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ProtocolCryptographyC\ProtocolCryptographyC.csproj" />
+    <PackageReference Include="NLog" Version="5.0.4" />
   </ItemGroup>
-	
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\CryptL\CryptL.csproj" />
+    <ProjectReference Include="..\..\ProtocolCryptographyC\ProtocolCryptographyC.csproj" />
+    <ProjectReference Include="..\RepositoryDB\RepositoryDB.csproj" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<None Update="NLog.config">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
 </Project>
