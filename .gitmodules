@@ -1,0 +1,6 @@
+[submodule "ProtocolCryptographyC"]
+	path = ProtocolCryptographyC
+	url = https://github.com/Daitarus/ProtocolCryptographyC.git
+[submodule "CryptL"]
+	path = CryptL
+	url = https://github.com/Daitarus/CryptL.git
